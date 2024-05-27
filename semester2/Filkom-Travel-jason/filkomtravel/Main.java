@@ -31,11 +31,15 @@ public class Main {
 
         for (int i = 0; i < lists.size(); i++) {
             String line[] = lists.get(i).split(" ");
+            String command = "";
             switch (line[0]) {
                 case "CREATE":
                     switch (line[1]) {
                         case "MEMBER":
-                            String[] value = line[2].split("\\|");
+                            for (int j = 3; j < line.length; j++) {
+                                command += line[j];
+                            }
+                            String[] value = command.split("\\|");
                             String idAnggota = value[0];
                             String nama = value[1];
                             String tanggalDaftar = value[2];
@@ -48,7 +52,10 @@ public class Main {
                             System.out.println(memberMessage);
                             break;
                         case "GUEST":
-                            String[] valueGuest = line[2].split("\\|");
+                            for (int j = 3; j < line.length; j++) {
+                                command += line[j];
+                            }
+                            String[] valueGuest = command.split("\\|");
                             String idTamu = valueGuest[0];
                             String saldoAwalGuest = valueGuest[1];
                             String guestMessage = !Guest.idExists(idTamu, userList)
@@ -59,23 +66,38 @@ public class Main {
                             System.out.println(guestMessage);
                             break;
                         case "MENU":
-                            if (line[2].split("\\|").length < 4) {
-                                continue;
+                            for (int j = 3; j < line.length; j++) {
+                                command += line[j];
                             }
-                            String[] menuValues = line[2].split("\\|");
+                            String[] menuValues = command.split("\\|");
                             String idMenu = menuValues[0];
                             String namaMenu = menuValues[1];
                             String platNomor = menuValues[2];
                             int harga = Integer.parseInt(menuValues[3]);
 
-                            String customType = menuValues.length > 4 ? menuValues[4] : null;
-                            String menuMessage = !Menu.idExists(idMenu, menuList)
-                                    && !Menu.platNomorExists(platNomor, menuList)
-                                            ? menuList.add(new Menu(idMenu, namaMenu, platNomor, harga, customType))
-                                                    ? "CREATE MENU SUCCESS: " + idMenu
-                                                    : "CREATE MENU FAILED: " + idMenu
-                                            : Menu.idExists(idMenu, menuList) ? "CREATE MENU FAILED: " + idMenu
-                                                    : "CREATE MENU FAILED: " + platNomor;
+                            String menuMessage;
+                            if (menuValues.length > 4) {
+                                String customType = menuValues[4];
+                                menuMessage = !Menu.idExists(idMenu, menuList)
+                                        && !Menu.platNomorExists(platNomor, menuList)
+                                                ? menuList.add(new Menu(idMenu, namaMenu, platNomor, harga, customType))
+                                                        ? "CREATE MENU SUCCESS: " + idMenu + " " + namaMenu + " "
+                                                                + platNomor
+                                                        : "CREATE MENU FAILED: " + idMenu
+                                                : Menu.idExists(idMenu, menuList)
+                                                        ? "CREATE MENU FAILED: " + idMenu + " IS EXISTS"
+                                                        : "CREATE MENU FAILED: " + platNomor + " IS EXISTS";
+                            } else {
+                                menuMessage = !Menu.idExists(idMenu, menuList)
+                                        && !Menu.platNomorExists(platNomor, menuList)
+                                                ? menuList.add(new Menu(idMenu, namaMenu, platNomor, harga))
+                                                        ? "CREATE MENU SUCCESS: " + idMenu + " " + namaMenu + " "
+                                                                + platNomor
+                                                        : "CREATE MENU FAILED: " + idMenu
+                                                : Menu.idExists(idMenu, menuList)
+                                                        ? "CREATE MENU FAILED: " + idMenu + " IS EXISTS"
+                                                        : "CREATE MENU FAILED: " + platNomor + " IS EXISTS";
+                            }
                             System.out.println(menuMessage);
                             break;
                         case "PROMO":

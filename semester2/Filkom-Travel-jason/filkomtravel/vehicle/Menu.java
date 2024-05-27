@@ -17,6 +17,13 @@ public class Menu {
         this.customType = customType;
     }
 
+    public Menu(String idMenu, String namaMenu, String platNomor, int harga) {
+        this.idMenu = idMenu;
+        this.namaMenu = namaMenu;
+        this.platNomor = platNomor;
+        this.harga = harga;
+    }
+
     public String getIdMenu() {
         return idMenu;
     }
