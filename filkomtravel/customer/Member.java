@@ -15,7 +15,7 @@ public class Member extends Guest {
     private String nama;
     private String tanggalDaftar;
 
-    public Member(String id, String nama, String tanggalDaftar, String saldoAwal) {
+    public Member(String id, String nama, String tanggalDaftar, int saldoAwal) {
         super(id, saldoAwal);
         this.nama = nama;
         this.tanggalDaftar = tanggalDaftar;

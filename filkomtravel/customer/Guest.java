@@ -8,11 +8,11 @@ import java.util.LinkedList;
  * It extends the Customer class and provides additional functionality for guest
  * users.
  */
-public class Guest {
+public class Guest extends Customer {
     private String id;
-    private String saldoAwal;
+    private int saldoAwal;
 
-    public Guest(String id, String saldoAwal) {
+    public Guest(String id, int saldoAwal) {
         this.id = id;
         this.saldoAwal = saldoAwal;
     }
@@ -21,7 +21,7 @@ public class Guest {
         return id;
     }
 
-    public String getSaldoAwal() {
+    public int getSaldoAwal() {
         return saldoAwal;
     }
 
@@ -32,6 +32,32 @@ public class Guest {
             }
         }
         return false;
+    }
 
+    @Override
+    public void topUpBalance(int amount) {
+        this.saldoAwal += amount;
+    }
+
+    public int getBalance() {
+        return this.saldoAwal;
+    }
+
+    public String getNamaLengkap() {
+        return this.id; // Atau implementasi lain yang sesuai untuk Guest
+    }
+}
+
+class TopUpService {
+    public String topUp(Guest customer, int amount) {
+        if (customer == null) {
+            return "TOPUP FAILED: NON EXISTENT CUSTOMER";
+        }
+
+        // Panggil metode topUpBalance dari objek Customer
+        customer.topUpBalance(amount);
+
+        // Membuat pesan sukses
+        return String.format("TOPUP SUCCESS: %s %d => %d", customer.getNamaLengkap(), amount, customer.getBalance());
     }
 }

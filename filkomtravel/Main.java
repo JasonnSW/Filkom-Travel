@@ -1,6 +1,6 @@
 import customer.*;
 import order.*;
-import promotion.Promo;
+import promotion.*;
 import vehicle.*;
 import java.util.Scanner;
 import java.util.ArrayList;
@@ -26,7 +26,7 @@ public class Main {
         }
         LinkedList<Guest> userList = new LinkedList<>(); // menyimpan user
         ArrayList<Menu> menuList = new ArrayList<>(); // menyimpan nilai menu
-        ArrayList<Promo> promoList = new ArrayList<>(); // menyimpan promo
+        // ArrayList<Promo> promoList = new ArrayList<>(); // menyimpan promo
         ArrayList<Order> orderList = new ArrayList<>(); // menyimpan promo
 
         for (int i = 0; i < lists.size(); i++) {
@@ -102,6 +102,7 @@ public class Main {
                             break;
                         case "PROMO":
                             // Implement promo creation logic here
+
                             break;
                         default:
                             break;
@@ -156,6 +157,21 @@ public class Main {
                         System.out.printf("REMOVE_FROM_CART FAILED: NON EXISTENT CUSTOMER OR MENU\n");
                     }
                     break;
+                case "APPLY_PROMO":
+                    String idPemesanPromo = line[1];
+                    String kodePromo = line[2];
+                    break;
+                case "TOPUP":
+                    String idPemesanTopUp = line[1];
+                    int saldoTopUp = Integer.parseInt(line[2]);
+
+                    // Cari pelanggan berdasarkan ID
+                    Guest guestToTopUp = findUserById(idPemesanTopUp, userList);
+
+                    // Lakukan top-up saldo
+                    TopUpService topUpService = new TopUpService();
+                    String topUpMessage = topUpService.topUp(guestToTopUp, saldoTopUp);
+                    System.out.println(topUpMessage);
                 default:
                     break;
             }
@@ -180,4 +196,5 @@ public class Main {
         }
         return null;
     }
+
 }
