@@ -1,3 +1,5 @@
+package promotion;
+
 import java.util.Date;
 import customer.*;
 
