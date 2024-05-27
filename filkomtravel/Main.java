@@ -31,11 +31,15 @@ public class Main {
 
         for (int i = 0; i < lists.size(); i++) {
             String line[] = lists.get(i).split(" ");
+            String command = " ";
             switch (line[0]) {
                 case "CREATE":
                     switch (line[1]) {
                         case "MEMBER":
-                            String[] value = line[2].split("\\|");
+                            for (int j = 2; j < line.length; j++) {
+                                command += line[j];
+                            }
+                            String[] value = command.split("\\|");
                             String idAnggota = value[0];
                             String nama = value[1];
                             String tanggalDaftar = value[2];
@@ -43,23 +47,29 @@ public class Main {
                             String memberMessage = !Guest.idExists(idAnggota, userList)
                                     ? userList.add(new Member(idAnggota, nama, tanggalDaftar, saldoAwalMember))
                                             ? "CREATE MEMBER SUCCESS: " + idAnggota
-                                            : "CREATE MEMBER FAILED: " + idAnggota
-                                    : "CREATE MEMBER FAILED: " + idAnggota;
+                                            : "CREATE MEMBER FAILED: " + idAnggota + " IS EXISTS"
+                                    : "CREATE MEMBER FAILED: " + idAnggota + " IS EXISTS";
                             System.out.println(memberMessage);
                             break;
                         case "GUEST":
-                            String[] valueGuest = line[2].split("\\|");
+                            for (int j = 2; j < line.length; j++) {
+                                command += line[j];
+                            }
+                            String[] valueGuest = command.split("\\|");
                             String idTamu = valueGuest[0];
                             String saldoAwalGuest = valueGuest[1];
                             String guestMessage = !Guest.idExists(idTamu, userList)
                                     ? userList.add(new Guest(idTamu, saldoAwalGuest))
                                             ? "CREATE GUEST SUCCESS: " + idTamu
-                                            : "CREATE GUEST FAILED: " + idTamu
-                                    : "CREATE GUEST FAILED: " + idTamu;
+                                            : "CREATE GUEST FAILED: " + idTamu + " IS EXISTS"
+                                    : "CREATE GUEST FAILED: " + idTamu + " IS EXISTS";
                             System.out.println(guestMessage);
                             break;
                         case "MENU":
-                            String[] menuValues = line[2].split("\\|");
+                            for (int j = 3; j < line.length; j++) {
+                                command += line[j];
+                            }
+                            String[] menuValues = command.split("\\|");
                             String idMenu = menuValues[0];
                             String namaMenu = menuValues[1];
                             String platNomor = menuValues[2];
@@ -75,8 +85,8 @@ public class Main {
                                                                 + platNomor
                                                         : "CREATE MENU FAILED: " + idMenu
                                                 : Menu.idExists(idMenu, menuList)
-                                                        ? "CREATE MENU FAILED: " + idMenu + " IS EXISTS"
-                                                        : "CREATE MENU FAILED: " + platNomor + " IS EXISTS";
+                                                        ? "CREATE MENU FAILED: " + idMenu + "IS EXISTS"
+                                                        : "CREATE MENU FAILED: " + platNomor + "IS EXISTS";
                             } else {
                                 menuMessage = !Menu.idExists(idMenu, menuList)
                                         && !Menu.platNomorExists(platNomor, menuList)
@@ -85,8 +95,8 @@ public class Main {
                                                                 + platNomor
                                                         : "CREATE MENU FAILED: " + idMenu
                                                 : Menu.idExists(idMenu, menuList)
-                                                        ? "CREATE MENU FAILED: " + idMenu + " IS EXISTS"
-                                                        : "CREATE MENU FAILED: " + platNomor + " IS EXISTS";
+                                                        ? "CREATE MENU FAILED: " + idMenu + "IS EXISTS"
+                                                        : "CREATE MENU FAILED: " + platNomor + "IS EXISTS";
                             }
                             System.out.println(menuMessage);
                             break;
