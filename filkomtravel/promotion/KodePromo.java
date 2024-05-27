@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 abstract class Promo {
     protected String kodePromo;
@@ -37,8 +38,8 @@ class DiscountPromo extends Promo {
     }
 }
 
-class KodePromo extends Promo {
-    public KodePromo(String kodePromo, String tanggalAwal, String tanggalAkhir, int persenPotongan, int maksPotongan, int minPembelian) {
+class CashbackPromo extends Promo {
+    public CashbackPromo(String kodePromo, String tanggalAwal, String tanggalAkhir, int persenPotongan, int maksPotongan, int minPembelian) {
         super(kodePromo, tanggalAwal, tanggalAkhir, persenPotongan, maksPotongan, minPembelian);
     }
 
@@ -61,9 +62,9 @@ class SistemPromo {
         if (jenisPromo.equalsIgnoreCase("DISCOUNT")) {
             promo = new DiscountPromo(kodePromo, tanggalAwal, tanggalAkhir, persenPotongan, maksPotongan, minPembelian);
         } else if (jenisPromo.equalsIgnoreCase("CASHBACK")) {
-            promo = new KodePromo(kodePromo, tanggalAwal, tanggalAkhir, persenPotongan, maksPotongan, minPembelian);
+            promo = new CashbackPromo(kodePromo, tanggalAwal, tanggalAkhir, persenPotongan, maksPotongan, minPembelian);
         } else {
-            return "CREATE PROMO " + jenisPromo + " FAILED: KodePromo IS EXISTS";
+            return "CREATE PROMO " + jenisPromo + " FAILED: Invalid Promo Type";
         }
         promoList.add(promo);
         return "CREATE PROMO " + jenisPromo + " SUCCESS: " + kodePromo;
@@ -76,5 +77,48 @@ class SistemPromo {
             sb.append(promo).append("\n");
         }
         return sb.toString();
+    }
+}
+
+public class KodePromo {
+    public static void main(String[] args) {
+        SistemPromo sistem = new SistemPromo();
+        Scanner scanner = new Scanner(System.in);
+        List<String> outputResults = new ArrayList<>();
+
+        while (true) {
+            String input = scanner.nextLine();
+
+            if (input.equalsIgnoreCase("EXIT")) {
+                for (String result : outputResults) {
+                    System.out.println(result);
+                }
+                break;
+            }
+
+            if (input.startsWith("CREATE PROMO")) {
+                String jenisPromo = input.split(" ")[2];
+                String detailPromo = scanner.nextLine();
+                String[] details = detailPromo.split("\\|");
+
+                if (details.length == 6) {
+                    String kodePromo = details[0];
+                    String tanggalAwal = details[1];
+                    String tanggalAkhir = details[2];
+                    int persenPotongan = Integer.parseInt(details[3].replace("%", ""));
+                    int maksPotongan = Integer.parseInt(details[4]);
+                    int minPembelian = Integer.parseInt(details[5]);
+
+                    String result = sistem.createPromo(jenisPromo, kodePromo, tanggalAwal, tanggalAkhir, persenPotongan, maksPotongan, minPembelian);
+                    outputResults.add(result);
+                } else {
+                    outputResults.add("Format detail promo tidak valid.");
+                }
+            } else {
+                outputResults.add("Perintah tidak valid.");
+            }
+        }
+
+        scanner.close();
     }
 }
