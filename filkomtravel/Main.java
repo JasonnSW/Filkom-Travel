@@ -59,23 +59,35 @@ public class Main {
                             System.out.println(guestMessage);
                             break;
                         case "MENU":
-                            if (line[2].split("\\|").length < 4) {
-                                continue;
-                            }
                             String[] menuValues = line[2].split("\\|");
                             String idMenu = menuValues[0];
                             String namaMenu = menuValues[1];
                             String platNomor = menuValues[2];
                             int harga = Integer.parseInt(menuValues[3]);
 
-                            String customType = menuValues.length > 4 ? menuValues[4] : null;
-                            String menuMessage = !Menu.idExists(idMenu, menuList)
-                                    && !Menu.platNomorExists(platNomor, menuList)
-                                            ? menuList.add(new Menu(idMenu, namaMenu, platNomor, harga, customType))
-                                                    ? "CREATE MENU SUCCESS: " + idMenu
-                                                    : "CREATE MENU FAILED: " + idMenu
-                                            : Menu.idExists(idMenu, menuList) ? "CREATE MENU FAILED: " + idMenu
-                                                    : "CREATE MENU FAILED: " + platNomor;
+                            String menuMessage;
+                            if (menuValues.length > 4) {
+                                String customType = menuValues[4];
+                                menuMessage = !Menu.idExists(idMenu, menuList)
+                                        && !Menu.platNomorExists(platNomor, menuList)
+                                                ? menuList.add(new Menu(idMenu, namaMenu, platNomor, harga, customType))
+                                                        ? "CREATE MENU SUCCESS: " + idMenu + " " + namaMenu + " "
+                                                                + platNomor
+                                                        : "CREATE MENU FAILED: " + idMenu
+                                                : Menu.idExists(idMenu, menuList)
+                                                        ? "CREATE MENU FAILED: " + idMenu + " IS EXISTS"
+                                                        : "CREATE MENU FAILED: " + platNomor + " IS EXISTS";
+                            } else {
+                                menuMessage = !Menu.idExists(idMenu, menuList)
+                                        && !Menu.platNomorExists(platNomor, menuList)
+                                                ? menuList.add(new Menu(idMenu, namaMenu, platNomor, harga))
+                                                        ? "CREATE MENU SUCCESS: " + idMenu + " " + namaMenu + " "
+                                                                + platNomor
+                                                        : "CREATE MENU FAILED: " + idMenu
+                                                : Menu.idExists(idMenu, menuList)
+                                                        ? "CREATE MENU FAILED: " + idMenu + " IS EXISTS"
+                                                        : "CREATE MENU FAILED: " + platNomor + " IS EXISTS";
+                            }
                             System.out.println(menuMessage);
                             break;
                         case "PROMO":
@@ -107,7 +119,31 @@ public class Main {
                                     menuItem.getPlatNomor());
                         }
                     } else {
-                        System.out.printf("ADD_TO_CART FAILED: User or Menu not found\n");
+                        System.out.printf("ADD_TO_CART FAILED: NON EXISTENT CUSTOMER OR MENU\n");
+                    }
+                    break;
+                case "REMOVE_FROM_CART":
+                    String idPemesanRemove = line[1];
+                    String idMenuCartRemove = line[2];
+                    int qtyRemove = Integer.parseInt(line[3]);
+                    Guest userRemove = findUserById(idPemesanRemove, userList);
+                    Menu menuItemRemove = findMenuById(idMenuCartRemove, menuList);
+                    if (userRemove != null && menuItemRemove != null) {
+                        if (Order.orderExists(idPemesanRemove, idMenuCartRemove, orderList)) {
+                            Order existingOrderRemove = Order.findOrder(idPemesanRemove, idMenuCartRemove, orderList);
+                            int newQty = existingOrderRemove.getQty() - qtyRemove;
+                            if (newQty > 0) {
+                                existingOrderRemove.setQty(newQty);
+                                System.out.printf("REMOVE_FROM_CART SUCCESS: %s %s DURATION IS DECREMENTED to %d\n",
+                                        menuItemRemove.getNamaMenu(), menuItemRemove.getPlatNomor(), newQty);
+                            } else {
+                                orderList.remove(existingOrderRemove);
+                                System.out.printf("REMOVE_FROM_CART SUCCESS: %s %s DURATION IS REMOVE\n",
+                                        menuItemRemove.getNamaMenu(), menuItemRemove.getPlatNomor());
+                            }
+                        }
+                    } else {
+                        System.out.printf("REMOVE_FROM_CART FAILED: NON EXISTENT CUSTOMER OR MENU\n");
                     }
                     break;
                 default:

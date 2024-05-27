@@ -9,6 +9,13 @@ public class Menu {
     private int harga;
     private String customType;
 
+    public Menu(String idMenu, String namaMenu, String platNomor, int harga) {
+        this.idMenu = idMenu;
+        this.namaMenu = namaMenu;
+        this.platNomor = platNomor;
+        this.harga = harga;
+    }
+
     public Menu(String idMenu, String namaMenu, String platNomor, int harga, String customType) {
         this.idMenu = idMenu;
         this.namaMenu = namaMenu;
