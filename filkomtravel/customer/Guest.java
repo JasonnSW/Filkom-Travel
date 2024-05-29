@@ -2,6 +2,8 @@ package customer;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Date;
+import promotion.Promotion;
 
 /**
  * The Guest class represents a guest user in the system.
@@ -10,54 +12,44 @@ import java.util.LinkedList;
  */
 public class Guest extends Customer {
     private String id;
-    private int saldoAwal;
+    private String nama;
+    private double saldoAwal;
 
-    public Guest(String id, int saldoAwal) {
-        this.id = id;
-        this.saldoAwal = saldoAwal;
+    public Guest(String nama, String id, double saldoAwal) {
+        super(id, saldoAwal);
+        this.nama = nama;
     }
 
     public String getId() {
         return id;
     }
 
-    public int getSaldoAwal() {
+    public double getSaldoAwal() {
         return saldoAwal;
     }
 
-    public static boolean idExists(String id, LinkedList<Guest> guests) {
-        for (Guest guest : guests) {
-            if (guest.getId().equals(id)) {
-                return true;
+    public static boolean idExists(String id, LinkedList<Customer> customers) {
+        for (Customer customer : customers) {
+            if (customer instanceof Guest) {
+                Guest guest = (Guest) customer;
+                if (guest.getId().equals(id)) {
+                    return true;
+                }
             }
         }
         return false;
     }
 
     @Override
-    public void topUpBalance(int amount) {
+    public void topUpBalance(double amount) {
         this.saldoAwal += amount;
     }
 
-    public int getBalance() {
+    public double getBalance() {
         return this.saldoAwal;
     }
 
     public String getNamaLengkap() {
-        return this.id; // Atau implementasi lain yang sesuai untuk Guest
-    }
-}
-
-class TopUpService {
-    public String topUp(Guest customer, int amount) {
-        if (customer == null) {
-            return "TOPUP FAILED: NON EXISTENT CUSTOMER";
-        }
-
-        // Panggil metode topUpBalance dari objek Customer
-        customer.topUpBalance(amount);
-
-        // Membuat pesan sukses
-        return String.format("TOPUP SUCCESS: %s %d => %d", customer.getNamaLengkap(), amount, customer.getBalance());
+        return this.id;
     }
 }

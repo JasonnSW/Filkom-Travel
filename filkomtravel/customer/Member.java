@@ -2,20 +2,15 @@ package customer;
 
 import java.util.Calendar;
 import java.util.Scanner;
+import java.util.*;
 
-/**
- * Represents a member of the system.
- * Extends the Guest class and adds additional member-specific functionality.
- */
-/**
- * Represents a member of the system.
- * Extends the Guest class.
- */
-public class Member extends Guest {
+import java.util.Date;
+
+public class Member extends Customer {
     private String nama;
-    private String tanggalDaftar;
+    private Date tanggalDaftar;
 
-    public Member(String id, String nama, String tanggalDaftar, int saldoAwal) {
+    public Member(String id, String nama, Date tanggalDaftar, double saldoAwal) {
         super(id, saldoAwal);
         this.nama = nama;
         this.tanggalDaftar = tanggalDaftar;
@@ -25,7 +20,7 @@ public class Member extends Guest {
         return nama;
     }
 
-    public String getTanggalDaftar() {
+    public Date getTanggalDaftar() {
         return tanggalDaftar;
     }
 }

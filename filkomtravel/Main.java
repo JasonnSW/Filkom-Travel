@@ -2,9 +2,9 @@ import customer.*;
 import order.*;
 import promotion.*;
 import vehicle.*;
-import java.util.Scanner;
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 /**
  * The Main class represents the main entry point of the Filkom Travel
@@ -24,10 +24,10 @@ public class Main {
             String tmp = sc.nextLine();
             lists.add(tmp);
         }
-        LinkedList<Guest> userList = new LinkedList<>(); // menyimpan user
+        LinkedList<Customer> userList = new LinkedList<>(); // menyimpan user
         ArrayList<Menu> menuList = new ArrayList<>(); // menyimpan nilai menu
-        // ArrayList<Promo> promoList = new ArrayList<>(); // menyimpan promo
-        ArrayList<Order> orderList = new ArrayList<>(); // menyimpan promo
+        ArrayList<Promotion> promoList = new ArrayList<>(); // menyimpan promo
+        ArrayList<Order> orderList = new ArrayList<>(); // menyimpan order
 
         for (int i = 0; i < lists.size(); i++) {
             String line[] = lists.get(i).split(" ");
@@ -42,10 +42,16 @@ public class Main {
                             String[] value = command.split("\\|");
                             String idAnggota = value[0];
                             String nama = value[1];
-                            String tanggalDaftar = value[2];
-                            String saldoAwalMember = value[3];
+                            Date tanggalDaftar = null;
+                            try {
+                                tanggalDaftar = new SimpleDateFormat("yyyy/MM/dd").parse(value[2]);
+                            } catch (ParseException e) {
+                                System.out.println("Error parsing date: " + e.getMessage());
+                            }
+                            double saldoAwalMember = Double.parseDouble(value[3]);
+                            Member newMember = new Member(idAnggota, nama, tanggalDaftar, saldoAwalMember);
                             String memberMessage = !Guest.idExists(idAnggota, userList)
-                                    ? userList.add(new Member(idAnggota, nama, tanggalDaftar, saldoAwalMember))
+                                    ? userList.add(newMember)
                                             ? "CREATE MEMBER SUCCESS: " + idAnggota
                                             : "CREATE MEMBER FAILED: " + idAnggota + " IS EXISTS"
                                     : "CREATE MEMBER FAILED: " + idAnggota + " IS EXISTS";
@@ -57,9 +63,9 @@ public class Main {
                             }
                             String[] valueGuest = command.split("\\|");
                             String idTamu = valueGuest[0];
-                            String saldoAwalGuest = valueGuest[1];
+                            Double saldoAwalGuest = Double.parseDouble(valueGuest[1]);
                             String guestMessage = !Guest.idExists(idTamu, userList)
-                                    ? userList.add(new Guest(idTamu, saldoAwalGuest))
+                                    ? userList.add(new Guest("GUEST", idTamu, saldoAwalGuest))
                                             ? "CREATE GUEST SUCCESS: " + idTamu
                                             : "CREATE GUEST FAILED: " + idTamu + " IS EXISTS"
                                     : "CREATE GUEST FAILED: " + idTamu + " IS EXISTS";
@@ -101,8 +107,65 @@ public class Main {
                             System.out.println(menuMessage);
                             break;
                         case "PROMO":
-                            // Implement promo creation logic here
+                            switch (line[2]) {
+                                case "DISCOUNT":
+                                    try {
+                                        String[] create = sc.nextLine().split("\\|");
+                                        if (isPromoCodeExist(create[0], promoList)) {
+                                            System.out.println(
+                                                    "CREATE PROMO DISCOUNT FAILED: " + create[0] + " IS EXISTS");
+                                            break;
+                                        }
 
+                                        String promoCode = create[0];
+                                        Date begin = new SimpleDateFormat("yyyy/MM/dd").parse(create[1]);
+                                        Date end = new SimpleDateFormat("yyyy/MM/dd").parse(create[2]);
+
+                                        String discountStr = create[3].replace("%", "");
+                                        int discountPercent = Integer.parseInt(discountStr);
+
+                                        int maxDiscount = Integer.parseInt(create[4]);
+                                        int minimumPurchase = Integer.parseInt(create[5]);
+
+                                        PercentOffPromo promo = new PercentOffPromo(promoCode, begin, end,
+                                                discountPercent, maxDiscount, minimumPurchase);
+                                        promoList.add(promo);
+                                        System.out.println("CREATE PROMO DISCOUNT SUCCESS: " + promoCode);
+                                    } catch (Exception e) {
+                                        System.out.println("Error");
+                                    }
+                                    break;
+
+                                case "CASHBACK":
+                                    try {
+                                        String[] create = sc.nextLine().split("\\|");
+                                        if (isPromoCodeExist(create[0], promoList)) {
+                                            System.out.println(
+                                                    "CREATE PROMO CASHBACK FAILED: " + create[0] + " IS EXISTS");
+                                            break;
+                                        }
+
+                                        String promoCode = create[0];
+                                        Date begin = new SimpleDateFormat("yyyy/MM/dd").parse(create[1]);
+                                        Date end = new SimpleDateFormat("yyyy/MM/dd").parse(create[2]);
+
+                                        String discountStr = create[3].replace("%", "");
+                                        int cashbackPercent = Integer.parseInt(discountStr);
+
+                                        int maxCashback = Integer.parseInt(create[4]);
+                                        int minimumPurchase = Integer.parseInt(create[5]);
+
+                                        CashbackPromo promo = new CashbackPromo(promoCode, begin, end,
+                                                cashbackPercent, maxCashback, minimumPurchase);
+                                        promoList.add(promo);
+                                        System.out.println("CREATE PROMO CASHBACK SUCCESS: " + promoCode);
+                                    } catch (Exception e) {
+                                        System.out.println("Error");
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
                             break;
                         default:
                             break;
@@ -112,9 +175,15 @@ public class Main {
                     String idPemesan = line[1];
                     String idMenuCart = line[2];
                     int qty = Integer.parseInt(line[3]);
-                    String tanggalAwal = line[4];
+                    Date tanggalAwal = null;
+                    try {
+                        tanggalAwal = new SimpleDateFormat("yyyy/MM/dd").parse(line[4]);
+                    } catch (ParseException e) {
+                        System.out.println("Error parsing date: " + e.getMessage());
+                        break;
+                    }
 
-                    Guest user = findUserById(idPemesan, userList);
+                    Customer user = findUserById(idPemesan, userList);
                     Menu menuItem = findMenuById(idMenuCart, menuList);
 
                     if (user != null && menuItem != null) {
@@ -124,7 +193,7 @@ public class Main {
                             System.out.printf("ADD_TO_CART SUCCESS: %d days %s %s (UPDATED)\n", existingOrder.getQty(),
                                     menuItem.getNamaMenu(), menuItem.getPlatNomor());
                         } else {
-                            Order newOrder = new Order(idPemesan, idMenuCart, qty, tanggalAwal);
+                            Order newOrder = new Order(idPemesan, idMenuCart, qty, tanggalAwal, orderList);
                             orderList.add(newOrder);
                             System.out.printf("ADD_TO_CART SUCCESS: %d day %s %s (NEW)\n", qty, menuItem.getNamaMenu(),
                                     menuItem.getPlatNomor());
@@ -137,7 +206,7 @@ public class Main {
                     String idPemesanRemove = line[1];
                     String idMenuCartRemove = line[2];
                     int qtyRemove = Integer.parseInt(line[3]);
-                    Guest userRemove = findUserById(idPemesanRemove, userList);
+                    Customer userRemove = findUserById(idPemesanRemove, userList);
                     Menu menuItemRemove = findMenuById(idMenuCartRemove, menuList);
                     if (userRemove != null && menuItemRemove != null) {
                         if (Order.orderExists(idPemesanRemove, idMenuCartRemove, orderList)) {
@@ -160,18 +229,31 @@ public class Main {
                 case "APPLY_PROMO":
                     String idPemesanPromo = line[1];
                     String kodePromo = line[2];
-                    break;
+                    double minimumPurchase = 100000;
+                    Customer customerToApplyPromo = findUserById(idPemesanPromo, userList);
+                    Promotion promo = findPromoByCode(kodePromo, promoList);
+                    if (promo != null) {
+                        Date currentDate = new Date();
+                        System.out.println(customerToApplyPromo.applyPromo(idPemesanPromo, 1, currentDate, kodePromo,
+                                promoList, (int) minimumPurchase));
+                    }
+
                 case "TOPUP":
                     String idPemesanTopUp = line[1];
-                    int saldoTopUp = Integer.parseInt(line[2]);
+                    double topUpAmount = Double.parseDouble(line[2]);
+                    Customer customerToTopUp = findUserById(idPemesanTopUp, userList);
+                    if (customerToTopUp != null) {
+                        System.out.println("TOPUP SUCCESS: " + customerToTopUp.getName() + " "
+                                + customerToTopUp.getBalance() + " => " + (customerToTopUp.getBalance() + topUpAmount));
+                        customerToTopUp.topUpBalance(topUpAmount);
+                    } else {
+                        System.out.println("TOPUP FAILED: NON EXISTENT CUSTOMER");
+                    }
+                    break;
+                case "CHECK_UP":
 
-                    // Cari pelanggan berdasarkan ID
-                    Guest guestToTopUp = findUserById(idPemesanTopUp, userList);
+                    break;
 
-                    // Lakukan top-up saldo
-                    TopUpService topUpService = new TopUpService();
-                    String topUpMessage = topUpService.topUp(guestToTopUp, saldoTopUp);
-                    System.out.println(topUpMessage);
                 default:
                     break;
             }
@@ -179,10 +261,18 @@ public class Main {
         sc.close();
     }
 
-    private static Guest findUserById(String id, LinkedList<Guest> userList) {
-        for (Guest user : userList) {
-            if (user.getId().equals(id)) {
-                return user;
+    public static Customer findUserById(String id, LinkedList<Customer> userList) {
+        for (Customer user : userList) {
+            if (user instanceof Guest) {
+                Guest guest = (Guest) user;
+                if (guest.getId().equals(id)) {
+                    return guest;
+                }
+            } else if (user instanceof Member) {
+                Member member = (Member) user;
+                if (member.getId().equals(id)) {
+                    return member;
+                }
             }
         }
         return null;
@@ -192,6 +282,24 @@ public class Main {
         for (Menu menu : menuList) {
             if (menu.getIdMenu().equals(id)) {
                 return menu;
+            }
+        }
+        return null;
+    }
+
+    public static boolean isPromoCodeExist(String code, ArrayList<Promotion> promoList) {
+        for (Promotion PROMO : promoList) {
+            if (PROMO.getPromoCode().equals(code)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static Promotion findPromoByCode(String code, ArrayList<Promotion> promoList) {
+        for (Promotion promo : promoList) {
+            if (promo.getPromoCode().equals(code)) {
+                return promo;
             }
         }
         return null;
