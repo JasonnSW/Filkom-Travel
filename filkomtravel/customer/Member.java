@@ -23,4 +23,16 @@ public class Member extends Customer {
     public Date getTanggalDaftar() {
         return tanggalDaftar;
     }
+
+    public static boolean idExists(String id, LinkedList<Customer> customers) {
+        for (Customer customer : customers) {
+            if (customer instanceof Member) {
+                Member member = (Member) customer;
+                if (member.getId().equals(id)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

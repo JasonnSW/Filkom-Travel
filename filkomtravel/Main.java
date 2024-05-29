@@ -43,7 +43,7 @@ public class Main {
                                 System.out.println("Error parsing date: " + e.getMessage());
                             }
                             double saldoAwalMember = Double.parseDouble(value[3]);
-                            String memberMessage = !Guest.idExists(idAnggota, userList)
+                            String memberMessage = !Member.idExists(idAnggota, userList)
                                     ? userList.add(new Member(idAnggota, nama, tanggalDaftar, saldoAwalMember))
                                             ? "CREATE MEMBER SUCCESS: " + idAnggota
                                             : "CREATE MEMBER FAILED: " + idAnggota + " IS EXISTS"
