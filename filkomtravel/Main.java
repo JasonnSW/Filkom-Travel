@@ -16,21 +16,15 @@ import java.text.SimpleDateFormat;
 public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        System.out.print("Tambah : ");
-        int t = sc.nextInt();
-        sc.nextLine();
-        ArrayList<String> lists = new ArrayList<>();
-        while (t-- > 0) {
-            String tmp = sc.nextLine();
-            lists.add(tmp);
-        }
         LinkedList<Customer> userList = new LinkedList<>(); // menyimpan user
         ArrayList<Menu> menuList = new ArrayList<>(); // menyimpan nilai menu
         ArrayList<Promotion> promoList = new ArrayList<>(); // menyimpan promo
         ArrayList<Order> orderList = new ArrayList<>(); // menyimpan order
+        String EOF = "";
 
-        for (int i = 0; i < lists.size(); i++) {
-            String line[] = lists.get(i).split(" ");
+        do {
+            String line[] = sc.nextLine().split(" ");
+            EOF = line[0];
             String command = " ";
             switch (line[0]) {
                 case "CREATE":
@@ -49,9 +43,8 @@ public class Main {
                                 System.out.println("Error parsing date: " + e.getMessage());
                             }
                             double saldoAwalMember = Double.parseDouble(value[3]);
-                            Member newMember = new Member(idAnggota, nama, tanggalDaftar, saldoAwalMember);
                             String memberMessage = !Guest.idExists(idAnggota, userList)
-                                    ? userList.add(newMember)
+                                    ? userList.add(new Member(idAnggota, nama, tanggalDaftar, saldoAwalMember))
                                             ? "CREATE MEMBER SUCCESS: " + idAnggota
                                             : "CREATE MEMBER FAILED: " + idAnggota + " IS EXISTS"
                                     : "CREATE MEMBER FAILED: " + idAnggota + " IS EXISTS";
@@ -91,8 +84,8 @@ public class Main {
                                                                 + platNomor
                                                         : "CREATE MENU FAILED: " + idMenu
                                                 : Menu.idExists(idMenu, menuList)
-                                                        ? "CREATE MENU FAILED: " + idMenu + "IS EXISTS"
-                                                        : "CREATE MENU FAILED: " + platNomor + "IS EXISTS";
+                                                        ? "CREATE MENU FAILED: " + idMenu + " IS EXISTS"
+                                                        : "CREATE MENU FAILED: " + platNomor + " IS EXISTS";
                             } else {
                                 menuMessage = !Menu.idExists(idMenu, menuList)
                                         && !Menu.platNomorExists(platNomor, menuList)
@@ -101,8 +94,8 @@ public class Main {
                                                                 + platNomor
                                                         : "CREATE MENU FAILED: " + idMenu
                                                 : Menu.idExists(idMenu, menuList)
-                                                        ? "CREATE MENU FAILED: " + idMenu + "IS EXISTS"
-                                                        : "CREATE MENU FAILED: " + platNomor + "IS EXISTS";
+                                                        ? "CREATE MENU FAILED: " + idMenu + " IS EXISTS"
+                                                        : "CREATE MENU FAILED: " + platNomor + " IS EXISTS";
                             }
                             System.out.println(menuMessage);
                             break;
@@ -257,7 +250,7 @@ public class Main {
                 default:
                     break;
             }
-        }
+        } while (EOF.equals("EXIT") == false);
         sc.close();
     }
 
