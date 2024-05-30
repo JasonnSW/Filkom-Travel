@@ -1,5 +1,8 @@
 package customer;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Date;
@@ -56,5 +59,40 @@ public abstract class Customer {
         return order.applyPromo(promoCode, promoList, new Date(), minimumPurchase);
     }
 
-}
+    public String checkout(ArrayList<Order> orderList, ArrayList<Promotion> promoList) {
+        double total = 0;
+        for (Order order : orders) {
+            total += order.getTotalPrice();
+        }
 
+        if (this.balance < total) {
+            return "CHECK_OUT FAILED: " + this.id + " " + this.name + " INSUFFICIENT_BALANCE";
+        }
+
+        this.balance -= total;
+        orderList.addAll(orders);
+        orders.clear();
+
+        return "CHECK_OUT SUCCESS: " + this.id + " " + this.name;
+    }
+
+    public void printOrder() {
+        Order lastOrder = orders.get(orders.size() - 1);
+        System.out.println("Kode Pemesan: " + getId());
+        System.out.println("Nama: " + getName());
+
+        System.out.println("");
+    }
+
+    public void printHistory() {
+        System.out.println("Kode Pemesan: " + getId());
+        System.out.println("Nama: " + getName());
+        System.out.println("Saldo: " + getBalance());
+        System.out.printf("%4s | %10s | %5s | %5s | %8s | %-8s%n", "No", "Nomor Pesanan", "Motor", "Mobil", "Subtotal",
+                "PROMO");
+        System.out.println("===============================================================");
+
+        System.out.println("===============================================================");
+    }
+
+}

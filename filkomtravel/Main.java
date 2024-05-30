@@ -6,13 +6,6 @@ import java.util.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-/**
- * The Main class represents the main entry point of the Filkom Travel
- * application.
- * It provides functionality for user login, registration, and vehicle selection
- * for rental.
- * The class contains a main method that executes the application logic.
- */
 public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
@@ -34,7 +27,7 @@ public class Main {
                                 command += line[j];
                             }
                             String[] value = command.split("\\|");
-                            String idAnggota = value[0];
+                            String idAnggota = value[0].replaceAll(" ", "");
                             String nama = value[1];
                             Date tanggalDaftar = null;
                             try {
@@ -55,7 +48,7 @@ public class Main {
                                 command += line[j];
                             }
                             String[] valueGuest = command.split("\\|");
-                            String idTamu = valueGuest[0];
+                            String idTamu = valueGuest[0].replaceAll(" ", "");
                             Double saldoAwalGuest = Double.parseDouble(valueGuest[1]);
                             String guestMessage = !Guest.idExists(idTamu, userList)
                                     ? userList.add(new Guest("GUEST", idTamu, saldoAwalGuest))
@@ -69,7 +62,7 @@ public class Main {
                                 command += line[j];
                             }
                             String[] menuValues = command.split("\\|");
-                            String idMenu = menuValues[0];
+                            String idMenu = menuValues[0].replaceAll(" ", "");
                             String namaMenu = menuValues[1];
                             String platNomor = menuValues[2];
                             int harga = Integer.parseInt(menuValues[3]);
@@ -178,6 +171,8 @@ public class Main {
 
                     Customer user = findUserById(idPemesan, userList);
                     Menu menuItem = findMenuById(idMenuCart, menuList);
+                    System.out.println("User: " + user);
+                    System.out.println("Menu: " + menuItem);
 
                     if (user != null && menuItem != null) {
                         if (Order.orderExists(idPemesan, idMenuCart, orderList)) {
@@ -243,8 +238,32 @@ public class Main {
                         System.out.println("TOPUP FAILED: NON EXISTENT CUSTOMER");
                     }
                     break;
-                case "CHECK_UP":
-
+                case "CHECK_OUT":
+                    String idPemesanCheckout = line[1];
+                    Customer customerToCheckout = findUserById(idPemesanCheckout, userList);
+                    if (customerToCheckout != null) {
+                        System.out.println(customerToCheckout.checkout(orderList, promoList));
+                    } else {
+                        System.out.println("CHECK_OUT FAILED: NON EXISTENT CUSTOMER");
+                    }
+                    break;
+                case "PRINT":
+                    String idPemesanPrint = line[1];
+                    Customer customerToPrint = findUserById(idPemesanPrint, userList);
+                    if (customerToPrint != null) {
+                        customerToPrint.printOrder();
+                    } else {
+                        System.out.println("PRINT FAILED: NON EXISTENT CUSTOMER");
+                    }
+                    break;
+                case "PRINT_HISTORY":
+                    String idPemesanPrintHistory = line[1];
+                    Customer customerToPrintHistory = findUserById(idPemesanPrintHistory, userList);
+                    if (customerToPrintHistory != null) {
+                        customerToPrintHistory.printHistory();
+                    } else {
+                        System.out.println("PRINT_HISTORY FAILED: NON EXISTENT CUSTOMER");
+                    }
                     break;
 
                 default:
