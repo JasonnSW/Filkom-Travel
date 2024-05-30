@@ -171,8 +171,6 @@ public class Main {
 
                     Customer user = findUserById(idPemesan, userList);
                     Menu menuItem = findMenuById(idMenuCart, menuList);
-                    System.out.println("User: " + user);
-                    System.out.println("Menu: " + menuItem);
 
                     if (user != null && menuItem != null) {
                         if (Order.orderExists(idPemesan, idMenuCart, orderList)) {
@@ -181,7 +179,8 @@ public class Main {
                             System.out.printf("ADD_TO_CART SUCCESS: %d days %s %s (UPDATED)\n", existingOrder.getQty(),
                                     menuItem.getNamaMenu(), menuItem.getPlatNomor());
                         } else {
-                            Order newOrder = new Order(idPemesan, idMenuCart, qty, tanggalAwal, orderList);
+                            Order newOrder = new Order(idPemesan, idMenuCart, qty, tanggalAwal, orderList,
+                                    menuItem.getNamaMenu(), menuItem.getPlatNomor());
                             orderList.add(newOrder);
                             System.out.printf("ADD_TO_CART SUCCESS: %d day %s %s (NEW)\n", qty, menuItem.getNamaMenu(),
                                     menuItem.getPlatNomor());
@@ -218,14 +217,26 @@ public class Main {
                     String idPemesanPromo = line[1];
                     String kodePromo = line[2];
                     double minimumPurchase = 100000;
-                    Customer customerToApplyPromo = findUserById(idPemesanPromo, userList);
-                    Promotion promo = findPromoByCode(kodePromo, promoList);
-                    if (promo != null) {
-                        Date currentDate = new Date();
-                        System.out.println(customerToApplyPromo.applyPromo(idPemesanPromo, 1, currentDate, kodePromo,
-                                promoList, (int) minimumPurchase));
+                    if (findUserById(idPemesanPromo, userList) instanceof Member) {
+                        Member customerToApplyPromo = (Member) findUserById(idPemesanPromo, userList);
+                        Promotion promo = findPromoByCode(kodePromo, promoList);
+                        if (promo != null) {
+                            Date currentDate = new Date();
+                            System.out
+                                    .println(customerToApplyPromo.applyPromo(idPemesanPromo, 1, currentDate, kodePromo,
+                                            promoList, (int) minimumPurchase));
+                        }
+                    } else {
+                        Guest customerToApplyPromo = (Guest) findUserById(idPemesanPromo, userList);
+                        Promotion promo = findPromoByCode(kodePromo, promoList);
+                        if (promo != null) {
+                            Date currentDate = new Date();
+                            System.out
+                                    .println(customerToApplyPromo.applyPromo(idPemesanPromo, 1, currentDate, kodePromo,
+                                            promoList, (int) minimumPurchase));
+                        }
                     }
-
+                    break;
                 case "TOPUP":
                     String idPemesanTopUp = line[1];
                     double topUpAmount = Double.parseDouble(line[2]);
@@ -240,18 +251,32 @@ public class Main {
                     break;
                 case "CHECK_OUT":
                     String idPemesanCheckout = line[1];
-                    Customer customerToCheckout = findUserById(idPemesanCheckout, userList);
-                    if (customerToCheckout != null) {
-                        System.out.println(customerToCheckout.checkout(orderList, promoList));
+                    if (findUserById(idPemesanCheckout, userList) instanceof Member) {
+                        Member customerToCheckout = (Member) findUserById(idPemesanCheckout, userList);
+                        if (customerToCheckout != null) {
+                            if (customerToCheckout.checkout(orderList, promoList)) {
+                                System.out.println("CHECK_OUT SUCCESS: " + customerToCheckout.getId() + " "
+                                        + customerToCheckout.getNama());
+                            }
+                        } else {
+                            System.out.println("CHECK_OUT FAILED: NON EXISTENT CUSTOMER");
+                        }
                     } else {
-                        System.out.println("CHECK_OUT FAILED: NON EXISTENT CUSTOMER");
+                        Guest customerToCheckout = (Guest) findUserById(idPemesanCheckout, userList);
+                        if (customerToCheckout != null) {
+                            if (customerToCheckout.checkout(orderList, promoList)) {
+                                System.out.println("CHECK_OUT SUCCESS: " + customerToCheckout.getId());
+                            }
+                        } else {
+                            System.out.println("CHECK_OUT FAILED: NON EXISTENT CUSTOMER");
+                        }
                     }
                     break;
                 case "PRINT":
                     String idPemesanPrint = line[1];
                     Customer customerToPrint = findUserById(idPemesanPrint, userList);
                     if (customerToPrint != null) {
-                        customerToPrint.printOrder();
+                        customerToPrint.printOrder(orderList);
                     } else {
                         System.out.println("PRINT FAILED: NON EXISTENT CUSTOMER");
                     }

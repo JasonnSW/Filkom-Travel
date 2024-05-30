@@ -1,10 +1,9 @@
 package customer;
 
-import java.util.Calendar;
-import java.util.Scanner;
 import java.util.*;
 
-import java.util.Date;
+import order.Order;
+import promotion.Promotion;
 
 public class Member extends Customer {
     private String nama;
@@ -13,6 +12,7 @@ public class Member extends Customer {
     public Member(String id, String nama, Date tanggalDaftar, double saldoAwal) {
         super(id, saldoAwal);
         this.nama = nama;
+        super.setName(nama);
         this.tanggalDaftar = tanggalDaftar;
     }
 

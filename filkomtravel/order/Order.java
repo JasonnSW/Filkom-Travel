@@ -13,9 +13,24 @@ public class Order {
     private String idMenu;
     private int qty;
     private Date tanggalAwal;
+    private Date tanggalAkhir;
     private ArrayList<Order> orderList;
     private int totalPrice, subTotalPrice;
     private Promotion promotion;
+    private String nama;
+    private String platNomor;
+
+    public Order(String idPemesan, String idMenu, int qty, Date tanggalAwal, ArrayList<Order> orderList, String nama,
+            String platNomor) {
+        this.idPemesan = idPemesan;
+        this.idMenu = idMenu;
+        this.qty = qty;
+        this.tanggalAwal = tanggalAwal;
+        this.orderList = orderList;
+        this.nama = nama;
+        this.platNomor = platNomor;
+        this.tanggalAkhir = calculateTanggalAkhir();
+    }
 
     public Order(String idPemesan, String idMenu, int qty, Date tanggalAwal, ArrayList<Order> orderList) {
         this.idPemesan = idPemesan;
@@ -23,6 +38,43 @@ public class Order {
         this.qty = qty;
         this.tanggalAwal = tanggalAwal;
         this.orderList = orderList;
+        this.tanggalAkhir = calculateTanggalAkhir();
+    }
+
+    public String getPlatNomor() {
+        return platNomor;
+    }
+
+    public void setTanggalAkhir(Date tanggalAkhir) {
+        this.tanggalAkhir = tanggalAkhir;
+    }
+
+    public void setTotalPrice(int totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    public void setSubTotalPrice(int subTotalPrice) {
+        this.subTotalPrice = subTotalPrice;
+    }
+
+    public void setPromotion(Promotion promotion) {
+        this.promotion = promotion;
+    }
+
+    public void setNama(String nama) {
+        this.nama = nama;
+    }
+
+    public int getSubTotalPrice() {
+        return subTotalPrice;
+    }
+
+    public Promotion getPromotion() {
+        return promotion;
+    }
+
+    public String getNama() {
+        return nama;
     }
 
     public String getIdPemesan() {
@@ -55,6 +107,11 @@ public class Order {
 
     public void setTanggalAwal(Date tanggalAwal) {
         this.tanggalAwal = tanggalAwal;
+        this.tanggalAkhir = calculateTanggalAkhir();
+    }
+
+    public Date getTanggalAkhir() {
+        return tanggalAkhir;
     }
 
     public ArrayList<Order> getOrderList() {
@@ -63,15 +120,6 @@ public class Order {
 
     public void setOrderList(ArrayList<Order> orderList) {
         this.orderList = orderList;
-    }
-
-    public static boolean idExists(String id, LinkedList<Guest> guests) {
-        for (Guest guest : guests) {
-            if (guest.getId().equals(id)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public int TotalPrice() {
@@ -140,4 +188,14 @@ public class Order {
         return "APPLY_PROMO SUCCESS: " + promoCode;
     }
 
+    private Date calculateTanggalAkhir() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(this.tanggalAwal);
+        calendar.add(Calendar.DAY_OF_MONTH, this.qty);
+        return calendar.getTime();
+    }
+
+    public String getPromoCode() {
+        return (promotion != null) ? promotion.getPromoCode() : "NO_PROMO";
+    }
 }
