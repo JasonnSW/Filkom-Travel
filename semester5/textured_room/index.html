@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Textured Room - Step 1</title>
+    <style>
+      /* Pastikan tampilan penuh layar dan latar belakang gelap */
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+        background: #111;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.146.0/build/three.min.js"></script>
+    <script>
+      // === 1. Scene ===
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x222222); // Warna latar belakang
+
+      // === 2. Camera ===
+      // Gunakan kamera perspektif (seperti mata manusia)
+      const camera = new THREE.PerspectiveCamera(
+        60, // Field of View (sudut pandang)
+        window.innerWidth / window.innerHeight, // Rasio aspek layar
+        0.1, // Jarak terdekat yang bisa dirender
+        100 // Jarak terjauh yang bisa dirender
+      );
+      // Posisi kamera sedikit di atas (Y=1.5) dan mundur (Z=3) dari titik pusat
+      camera.position.set(0, 1.5, 3);
+      camera.lookAt(0, 1, 0); // Kamera melihat ke arah titik (0, 1, 0)
+
+      // === 3. Renderer ===
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement); // Tambahkan canvas ke body HTML
+
+      // === 4. Render Loop ===
+      // Fungsi yang akan dipanggil berulang-ulang untuk menggambar scene
+      function animate() {
+        requestAnimationFrame(animate);
+        renderer.render(scene, camera);
+      }
+      animate();
+
+      // === 5. Resize Responsif ===
+      // Agar tampilan menyesuaikan ukuran window browser
+      window.addEventListener("resize", () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+    </script>
+  </body>
+</html>

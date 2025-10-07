@@ -6,8 +6,8 @@ import java.util.PriorityQueue;
  */
 public class test {
     public static void main(String[] args) {
-        String than = "Nathan saka kama";
-        than.replace("a", "o");
+        String than = "Nathan saka kama saka saka";
+        than = than.replace("saka", "o");
         System.out.println(than);
     }
 }
